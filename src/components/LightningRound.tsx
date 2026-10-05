@@ -18,6 +18,7 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
   const [feedback, setFeedback] = useState<number | null>(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(1);
+  const [typedInput, setTypedInput] = useState('');
 
   const [stats, setStats] = useState<PlayerStats>({
     correct: 0,
@@ -49,11 +50,55 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     };
   }, [gameStarted, gameOver]);
 
+  // Keyboard support
+  useEffect(() => {
+    if (!gameStarted || gameOver || feedback !== null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Press 1-4 to select choices
+      if (e.key >= '1' && e.key <= '4') {
+        const index = parseInt(e.key) - 1;
+        if (index < choices.length) {
+          handleAnswer(choices[index]);
+        }
+      }
+      // Type numbers to find matching answer
+      else if (e.key >= '0' && e.key <= '9') {
+        setTypedInput(prev => {
+          const newInput = (prev + e.key).slice(0, 3);
+          const numValue = parseInt(newInput);
+          // Auto-select if matches a choice
+          const matchIndex = choices.findIndex(c => c === numValue);
+          if (matchIndex !== -1) {
+            setTimeout(() => handleAnswer(choices[matchIndex]), 200);
+            return '';
+          }
+          return newInput;
+        });
+      } else if (e.key === 'Backspace') {
+        setTypedInput(prev => prev.slice(0, -1));
+      } else if (e.key === 'Enter' && typedInput) {
+        const numValue = parseInt(typedInput);
+        const matchIndex = choices.findIndex(c => c === numValue);
+        if (matchIndex !== -1) {
+          handleAnswer(choices[matchIndex]);
+        }
+        setTypedInput('');
+      } else if (e.key === 'Escape') {
+        setTypedInput('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [gameStarted, gameOver, feedback, choices, typedInput]);
+
   const nextQuestion = useCallback(() => {
     const newQ = generateQuestion();
     setQuestion(newQ);
     setChoices(generateMultipleChoice(newQ.answer));
     setQuestionNumber(prev => prev + 1);
+    setTypedInput('');
   }, []);
 
   const handleAnswer = useCallback((choice: number) => {
@@ -68,6 +113,7 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     };
 
     setFeedback(choice);
+    setTypedInput('');
 
     if (choice === question.answer) {
       newStats.correct = stats.correct + 1;
@@ -99,6 +145,7 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     setFeedback(null);
     setGameStarted(false);
     setQuestionNumber(1);
+    setTypedInput('');
     setStats({ correct: 0, incorrect: 0, totalTime: GAME_DURATION, questionsAnswered: [], answersGiven: [], correctAnswers: [] });
   };
 
@@ -128,6 +175,7 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
           </p>
           <div className="bg-orange-50 rounded-2xl p-4 mb-6 border-2 border-orange-200">
             <p className="text-orange-700 font-medium">⚡ Speed matters! The faster you answer, the more points you get!</p>
+            <p className="text-orange-600 text-sm mt-2">⌨️ Use keyboard: Press 1-4 to select choices, or type the answer!</p>
           </div>
           <button
             onClick={startGame}
@@ -184,9 +232,16 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
       <div className="max-w-4xl mx-auto px-4 mt-8">
         <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
           <p className="text-gray-500 text-lg mb-3">Quick! What is...</p>
-          <div className="text-7xl font-bold text-gray-800 mb-6">
+          <div className="text-7xl font-bold text-gray-800 mb-4">
             {question.num1} × {question.num2}
           </div>
+
+          {/* Typed Input Display */}
+          {typedInput && (
+            <div className="mb-4 text-2xl font-bold text-orange-600 bg-orange-50 rounded-xl p-2 inline-block">
+              Your answer: {typedInput}
+            </div>
+          )}
 
           {/* Multiple Choice Grid */}
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
@@ -208,13 +263,16 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
                   key={index}
                   onClick={() => handleAnswer(choice)}
                   disabled={feedback !== null || gameOver}
-                  className={`${btnClass} font-bold text-3xl py-6 rounded-2xl border-4 transition-all duration-200 transform shadow-md`}
+                  className={`${btnClass} font-bold text-3xl py-6 rounded-2xl border-4 transition-all duration-200 transform shadow-md relative`}
                 >
+                  <span className="absolute top-2 left-3 text-xs text-gray-400 font-normal">{index + 1}</span>
                   {choice}
                 </button>
               );
             })}
           </div>
+
+          <p className="text-xs text-gray-400 mt-4">⌨️ Press 1-4 or type the answer on your keyboard</p>
         </div>
       </div>
 

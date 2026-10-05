@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface NumberPadProps {
   value: string;
@@ -8,6 +8,8 @@ interface NumberPadProps {
   onDelete: () => void;
   color: 'blue' | 'red' | 'green' | 'purple';
   disabled?: boolean;
+  enableKeyboard?: boolean;
+  keyboardRef?: React.RefObject<HTMLDivElement>;
 }
 
 const colorClasses = {
@@ -53,20 +55,45 @@ const NumberPad: React.FC<NumberPadProps> = ({
   onDelete,
   color,
   disabled = false,
+  enableKeyboard = false,
+  keyboardRef,
 }) => {
   const colors = colorClasses[color];
-  const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
+  const topDigits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+  useEffect(() => {
+    if (!enableKeyboard || disabled) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key >= '0' && e.key <= '9') {
+        onDigit(e.key);
+      } else if (e.key === 'Enter') {
+        onSubmit();
+      } else if (e.key === 'Backspace') {
+        onDelete();
+      } else if (e.key === 'Escape' || e.key === 'Delete') {
+        onClear();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [enableKeyboard, disabled, onDigit, onSubmit, onDelete, onClear]);
 
   return (
-    <div className={`p-4 rounded-2xl ${colors.light} border-4 ${colors.border} shadow-lg`}>
+    <div
+      ref={keyboardRef}
+      className={`p-4 rounded-2xl ${colors.light} border-4 ${colors.border} shadow-lg`}
+      tabIndex={enableKeyboard ? 0 : undefined}
+    >
       {/* Display */}
       <div className={`mb-4 p-4 bg-white rounded-xl text-center text-3xl font-bold ${colors.text} min-h-[60px] flex items-center justify-center border-2 ${colors.border}`}>
         {value || <span className="text-gray-300">?</span>}
       </div>
       
-      {/* Number Grid */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        {digits.map((digit) => (
+      {/* Number Grid - Top 3 rows */}
+      <div className="grid grid-cols-3 gap-2 mb-2">
+        {topDigits.map((digit) => (
           <button
             key={digit}
             onClick={() => onDigit(digit)}
@@ -77,9 +104,9 @@ const NumberPad: React.FC<NumberPadProps> = ({
           </button>
         ))}
       </div>
-      
-      {/* Action Buttons */}
-      <div className="grid grid-cols-3 gap-2">
+
+      {/* Bottom row - Centered zero */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
         <button
           onClick={onClear}
           disabled={disabled}
@@ -88,20 +115,33 @@ const NumberPad: React.FC<NumberPadProps> = ({
           Clear
         </button>
         <button
+          onClick={() => onDigit('0')}
+          disabled={disabled}
+          className={`${colors.bg} ${colors.hover} text-white font-bold text-xl py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
+        >
+          0
+        </button>
+        <button
           onClick={onDelete}
           disabled={disabled}
           className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 shadow-md"
         >
           ⌫
         </button>
-        <button
-          onClick={onSubmit}
-          disabled={disabled || value.length === 0}
-          className={`${colors.submit} text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
-        >
-          ✓
-        </button>
       </div>
+      
+      {/* Submit Button */}
+      <button
+        onClick={onSubmit}
+        disabled={disabled || value.length === 0}
+        className={`w-full ${colors.submit} text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-lg`}
+      >
+        ✓ Submit
+      </button>
+
+      {enableKeyboard && (
+        <p className="text-center text-xs text-gray-400 mt-2">⌨️ You can also use your keyboard!</p>
+      )}
     </div>
   );
 };

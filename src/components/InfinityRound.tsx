@@ -39,8 +39,10 @@ const InfinityRound: React.FC<InfinityRoundProps> = ({ onHome }) => {
     setQuestion(generateQuestion());
   }, []);
 
-  const checkAnswer = useCallback((inputValue: string) => {
-    const answer = parseInt(inputValue);
+  const handleSubmit = useCallback(() => {
+    if (input.length === 0 || gameOver || feedback) return;
+
+    const answer = parseInt(input);
     const encodedQ = question.num1 * 10 + question.num2;
     
     const newStats = {
@@ -70,7 +72,7 @@ const InfinityRound: React.FC<InfinityRoundProps> = ({ onHome }) => {
       setFeedback(null);
       nextQuestion();
     }, 600);
-  }, [question, stats, nextQuestion]);
+  }, [input, question, stats, gameOver, feedback, nextQuestion]);
 
   const endRound = () => {
     const finalStats = {
@@ -80,11 +82,6 @@ const InfinityRound: React.FC<InfinityRoundProps> = ({ onHome }) => {
     setStats(finalStats);
     setGameOver(true);
     setTimeout(() => setShowStats(true), 500);
-  };
-
-  const handleDigit = (digit: string) => {
-    if (gameOver || feedback) return;
-    setInput(prev => prev.length < 3 ? prev + digit : prev);
   };
 
   const resetGame = () => {
@@ -171,12 +168,16 @@ const InfinityRound: React.FC<InfinityRoundProps> = ({ onHome }) => {
       <div className="max-w-sm mx-auto px-4 mt-6 pb-8">
         <NumberPad
           value={input}
-          onDigit={handleDigit}
+          onDigit={(digit) => {
+            if (gameOver || feedback) return;
+            setInput(prev => prev.length < 3 ? prev + digit : prev);
+          }}
           onClear={() => setInput('')}
-          onSubmit={() => checkAnswer(input)}
+          onSubmit={handleSubmit}
           onDelete={() => setInput(prev => prev.slice(0, -1))}
           color="purple"
           disabled={gameOver || feedback !== null}
+          enableKeyboard={true}
         />
       </div>
 
