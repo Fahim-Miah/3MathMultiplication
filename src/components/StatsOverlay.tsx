@@ -26,7 +26,6 @@ const StatsOverlay: React.FC<StatsOverlayProps> = ({
 
   useEffect(() => {
     if (isWinner || percentage >= 70) {
-      // Fire confetti
       const duration = 3000;
       const end = Date.now() + duration;
 

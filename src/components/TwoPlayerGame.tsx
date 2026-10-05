@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import NumberPad from './NumberPad';
 import TwoPlayerStatsOverlay from './TwoPlayerStatsOverlay';
-import { generateQuestion, Question, PlayerStats } from '../utils/gameUtils';
+import { generateQuestion, Question, PlayerStats, Difficulty } from '../utils/gameUtils';
 
 interface TwoPlayerGameProps {
   onHome: () => void;
@@ -10,7 +10,8 @@ interface TwoPlayerGameProps {
 const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [questionsToWin, setQuestionsToWin] = useState(10);
-  const [question, setQuestion] = useState<Question>(generateQuestion());
+  const [difficulty, setDifficulty] = useState<Difficulty>('mixed');
+  const [question, setQuestion] = useState<Question>(generateQuestion('mixed'));
   const [player1Input, setPlayer1Input] = useState('');
   const [player2Input, setPlayer2Input] = useState('');
   const [player1Score, setPlayer1Score] = useState(0);
@@ -21,7 +22,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   const [startTime, setStartTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   
-  // Small indication when a player gets the answer right
   const [player1CorrectFlash, setPlayer1CorrectFlash] = useState(false);
   const [player2CorrectFlash, setPlayer2CorrectFlash] = useState(false);
 
@@ -52,14 +52,14 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   }, [startTime, gameStarted, gameOver]);
 
   const nextQuestion = useCallback(() => {
-    setQuestion(generateQuestion());
-  }, []);
+    setQuestion(generateQuestion(difficulty));
+  }, [difficulty]);
 
   const checkAnswer = useCallback((player: 1 | 2, input: string) => {
     if (input.length === 0) return;
     
     const answer = parseInt(input);
-    const encodedQ = question.num1 * 10 + question.num2;
+    const encodedQ = question.num1 * 1000 + question.num2;
     
     if (player === 1) {
       const newStats = {
@@ -70,14 +70,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       };
       
       if (answer === question.answer) {
-        // Correct! Flash indication and advance score
         const newScore = player1Score + 1;
         newStats.correct = player1Stats.correct + 1;
         setPlayer1Score(newScore);
         setPlayer1Stats(newStats);
         setPlayer1Input('');
         
-        // Small non-distracting indication
         setPlayer1CorrectFlash(true);
         setTimeout(() => setPlayer1CorrectFlash(false), 1500);
         
@@ -91,10 +89,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           return;
         }
         
-        // Move to next question after correct answer
         nextQuestion();
       } else {
-        // Wrong answer - question stays the same
         newStats.incorrect = player1Stats.incorrect + 1;
         setPlayer1Stats(newStats);
         setPlayer1Input('');
@@ -108,14 +104,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       };
       
       if (answer === question.answer) {
-        // Correct! Flash indication and advance score
         const newScore = player2Score + 1;
         newStats.correct = player2Stats.correct + 1;
         setPlayer2Score(newScore);
         setPlayer2Stats(newStats);
         setPlayer2Input('');
         
-        // Small non-distracting indication
         setPlayer2CorrectFlash(true);
         setTimeout(() => setPlayer2CorrectFlash(false), 1500);
         
@@ -129,10 +123,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           return;
         }
         
-        // Move to next question after correct answer
         nextQuestion();
       } else {
-        // Wrong answer - question stays the same
         newStats.incorrect = player2Stats.incorrect + 1;
         setPlayer2Stats(newStats);
         setPlayer2Input('');
@@ -142,21 +134,22 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
 
   const handlePlayer1Digit = (digit: string) => {
     if (gameOver) return;
-    setPlayer1Input(prev => prev.length < 3 ? prev + digit : prev);
+    setPlayer1Input(prev => prev.length < 4 ? prev + digit : prev);
   };
 
   const handlePlayer2Digit = (digit: string) => {
     if (gameOver) return;
-    setPlayer2Input(prev => prev.length < 3 ? prev + digit : prev);
+    setPlayer2Input(prev => prev.length < 4 ? prev + digit : prev);
   };
 
   const startGame = () => {
+    setQuestion(generateQuestion(difficulty));
     setGameStarted(true);
     setStartTime(Date.now());
   };
 
   const resetGame = () => {
-    setQuestion(generateQuestion());
+    setQuestion(generateQuestion(difficulty));
     setPlayer1Input('');
     setPlayer2Input('');
     setPlayer1Score(0);
@@ -185,6 +178,29 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           <div className="text-6xl mb-4">⚔️</div>
           <h2 className="text-3xl font-bold text-purple-700 mb-6">Two Player Battle</h2>
           
+          {/* Difficulty Selection */}
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-3 text-lg">
+              Choose difficulty:
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['2-digit', 'mixed', '3-digit'] as Difficulty[]).map(diff => (
+                <button
+                  key={diff}
+                  onClick={() => setDifficulty(diff)}
+                  className={`py-3 rounded-xl font-bold text-sm transition-all duration-200 transform hover:scale-105 ${
+                    difficulty === diff
+                      ? 'bg-purple-600 text-white shadow-lg scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {diff === '2-digit' ? '2-digit' : diff === '3-digit' ? '3-digit' : 'Mixed'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Questions to Win */}
           <div className="mb-6">
             <label className="block text-gray-700 font-bold mb-3 text-lg">
               How many correct answers to win?
@@ -212,7 +228,7 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           <div className="bg-blue-50 rounded-2xl p-4 mb-6 border-2 border-blue-200 text-left">
             <h4 className="font-bold text-blue-700 mb-2">📋 Rules:</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Both players see the same question</li>
+              <li>• Both players see the same addition question</li>
               <li>• The question stays until someone answers correctly</li>
               <li>• Wrong answers don't change the question</li>
               <li>• First to {questionsToWin} correct answers wins!</li>
@@ -290,8 +306,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       <div className="max-w-6xl mx-auto px-4 mt-6">
         <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
           <p className="text-gray-500 text-lg mb-2">Solve this:</p>
-          <div className="text-6xl font-bold text-gray-800">
-            {question.num1} × {question.num2} = ?
+          <div className="text-5xl md:text-6xl font-bold text-gray-800">
+            {question.num1} + {question.num2} = ?
           </div>
           <p className="text-sm text-gray-400 mt-3">Question stays until answered correctly</p>
         </div>

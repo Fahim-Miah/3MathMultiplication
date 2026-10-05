@@ -1,22 +1,23 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import StatsOverlay from './StatsOverlay';
-import { generateQuestion, generateMultipleChoice, Question, PlayerStats } from '../utils/gameUtils';
+import { generateQuestion, generateMultipleChoice, Question, PlayerStats, Difficulty } from '../utils/gameUtils';
 
 interface LightningRoundProps {
   onHome: () => void;
 }
 
-const GAME_DURATION = 60; // 60 seconds
+const GAME_DURATION = 60;
 
 const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
-  const [question, setQuestion] = useState<Question>(generateQuestion());
+  const [gameStarted, setGameStarted] = useState(false);
+  const [difficulty, setDifficulty] = useState<Difficulty>('mixed');
+  const [question, setQuestion] = useState<Question>(generateQuestion('mixed'));
   const [choices, setChoices] = useState<number[]>(generateMultipleChoice(question.answer));
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
   const [feedback, setFeedback] = useState<number | null>(null);
-  const [gameStarted, setGameStarted] = useState(false);
   const [questionNumber, setQuestionNumber] = useState(1);
   const [typedInput, setTypedInput] = useState('');
 
@@ -55,19 +56,15 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     if (!gameStarted || gameOver || feedback !== null) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Press 1-4 to select choices
       if (e.key >= '1' && e.key <= '4') {
         const index = parseInt(e.key) - 1;
         if (index < choices.length) {
           handleAnswer(choices[index]);
         }
-      }
-      // Type numbers to find matching answer
-      else if (e.key >= '0' && e.key <= '9') {
+      } else if (e.key >= '0' && e.key <= '9') {
         setTypedInput(prev => {
-          const newInput = (prev + e.key).slice(0, 3);
+          const newInput = (prev + e.key).slice(0, 4);
           const numValue = parseInt(newInput);
-          // Auto-select if matches a choice
           const matchIndex = choices.findIndex(c => c === numValue);
           if (matchIndex !== -1) {
             setTimeout(() => handleAnswer(choices[matchIndex]), 200);
@@ -94,17 +91,17 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
   }, [gameStarted, gameOver, feedback, choices, typedInput]);
 
   const nextQuestion = useCallback(() => {
-    const newQ = generateQuestion();
+    const newQ = generateQuestion(difficulty);
     setQuestion(newQ);
     setChoices(generateMultipleChoice(newQ.answer));
     setQuestionNumber(prev => prev + 1);
     setTypedInput('');
-  }, []);
+  }, [difficulty]);
 
   const handleAnswer = useCallback((choice: number) => {
     if (gameOver || feedback !== null) return;
 
-    const encodedQ = question.num1 * 10 + question.num2;
+    const encodedQ = question.num1 * 1000 + question.num2;
     const newStats = {
       ...stats,
       questionsAnswered: [...stats.questionsAnswered, encodedQ],
@@ -131,11 +128,13 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
   }, [question, stats, gameOver, feedback, nextQuestion]);
 
   const startGame = () => {
+    setQuestion(generateQuestion(difficulty));
+    setChoices(generateMultipleChoice(question.answer));
     setGameStarted(true);
   };
 
   const resetGame = () => {
-    const newQ = generateQuestion();
+    const newQ = generateQuestion(difficulty);
     setQuestion(newQ);
     setChoices(generateMultipleChoice(newQ.answer));
     setScore(0);
@@ -161,14 +160,38 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     return 'from-red-400 to-red-600';
   };
 
+  // Pre-game setup
   if (!gameStarted && !gameOver) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-50 to-amber-100 flex items-center justify-center">
         <div className="bg-white rounded-3xl p-8 shadow-2xl text-center max-w-md mx-4">
           <div className="text-7xl mb-4">⚡</div>
           <h1 className="text-4xl font-bold text-orange-600 mb-4">Lightning Round!</h1>
+          
+          {/* Difficulty Selection */}
+          <div className="mb-6">
+            <label className="block text-gray-700 font-bold mb-3 text-lg">
+              Choose difficulty:
+            </label>
+            <div className="grid grid-cols-3 gap-2">
+              {(['2-digit', 'mixed', '3-digit'] as Difficulty[]).map(diff => (
+                <button
+                  key={diff}
+                  onClick={() => setDifficulty(diff)}
+                  className={`py-3 rounded-xl font-bold text-sm transition-all duration-200 transform hover:scale-105 ${
+                    difficulty === diff
+                      ? 'bg-orange-600 text-white shadow-lg scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {diff === '2-digit' ? '2-digit' : diff === '3-digit' ? '3-digit' : 'Mixed'}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <p className="text-gray-600 text-lg mb-2">
-            Answer as many multiplication questions as you can in <span className="font-bold text-orange-600">60 seconds!</span>
+            Answer as many addition questions as you can in <span className="font-bold text-orange-600">60 seconds!</span>
           </p>
           <p className="text-gray-500 mb-6">
             Pick the correct answer from 4 choices. Be quick and accurate!
@@ -232,8 +255,8 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
       <div className="max-w-4xl mx-auto px-4 mt-8">
         <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
           <p className="text-gray-500 text-lg mb-3">Quick! What is...</p>
-          <div className="text-7xl font-bold text-gray-800 mb-4">
-            {question.num1} × {question.num2}
+          <div className="text-5xl md:text-7xl font-bold text-gray-800 mb-4">
+            {question.num1} + {question.num2}
           </div>
 
           {/* Typed Input Display */}

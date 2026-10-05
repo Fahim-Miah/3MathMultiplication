@@ -15,20 +15,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
         <div className="absolute bottom-20 left-20 text-5xl animate-bounce" style={{ animationDelay: '1s' }}>🎈</div>
         <div className="absolute bottom-10 right-10 text-6xl animate-bounce" style={{ animationDelay: '1.5s' }}>🎉</div>
         <div className="absolute top-1/2 left-5 text-4xl animate-pulse">🔢</div>
-        <div className="absolute top-1/3 right-10 text-4xl animate-pulse" style={{ animationDelay: '0.7s' }}>✖️</div>
+        <div className="absolute top-1/3 right-10 text-4xl animate-pulse" style={{ animationDelay: '0.7s' }}>➕</div>
       </div>
 
       {/* Header */}
       <div className="relative z-10 pt-8 pb-4 text-center">
         <div className="text-7xl mb-4 animate-bounce">🧮</div>
         <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
-          Math Multiplication
+          Addition Adventure!
         </h1>
         <h2 className="text-3xl md:text-4xl font-bold text-purple-700 mt-2">
-          FUN! 🎮
+          🎮
         </h2>
         <p className="text-lg text-gray-600 mt-4 max-w-md mx-auto px-4">
-          Welcome to the most fun way to practice your multiplication tables! 
+          Welcome to the most fun way to practice addition with 2-digit and 3-digit numbers! 
           Pick a game mode below and start playing! 🚀
         </p>
       </div>
@@ -40,7 +40,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="text-center p-3 bg-blue-50 rounded-2xl">
               <div className="text-4xl mb-2">👀</div>
-              <p className="font-medium text-blue-800">Look at the multiplication question on screen</p>
+              <p className="font-medium text-blue-800">Look at the addition question on screen</p>
             </div>
             <div className="text-center p-3 bg-green-50 rounded-2xl">
               <div className="text-4xl mb-2">🤔</div>
@@ -50,6 +50,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
               <div className="text-4xl mb-2">✅</div>
               <p className="font-medium text-purple-800">Press the check button to submit your answer!</p>
             </div>
+          </div>
+          <div className="mt-4 text-center">
+            <p className="text-gray-600 text-sm">
+              💡 <strong>Tip:</strong> Line up your numbers carefully and remember to carry over when a column adds up to 10 or more!
+            </p>
           </div>
         </div>
       </div>
@@ -70,13 +75,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
                 <h4 className="text-2xl font-bold text-gray-800">Two Player Battle</h4>
               </div>
               <p className="text-gray-600 mb-3">
-                Challenge a friend! Race to answer 10 multiplication questions correctly first. 
+                Challenge a friend! Race to answer addition questions correctly first. 
                 Each player has their own number pad.
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">🔵 Player 1</span>
                 <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">🔴 Player 2</span>
-                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">🏆 First to 10</span>
+                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">🏆 Race!</span>
               </div>
             </div>
           </button>
@@ -92,10 +97,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
                 <h4 className="text-2xl font-bold text-gray-800">Practice Mode</h4>
               </div>
               <p className="text-gray-600 mb-3">
-                Practice on your own! Answer 10 multiplication questions at your own pace. 
+                Practice on your own! Answer 10 addition questions at your own pace. 
                 Great for learning and improving!
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">📝 10 Questions</span>
                 <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-medium">🧘 No Rush</span>
                 <span className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium">📊 Get Stats</span>
@@ -114,7 +119,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
                 <h4 className="text-2xl font-bold text-gray-800">Lightning Round</h4>
               </div>
               <p className="text-gray-600 mb-3">
-                Think fast! You have 60 seconds to answer as many multiple-choice questions as possible. 
+                Think fast! You have 60 seconds to answer as many multiple-choice addition questions as possible. 
                 Pick the right answer from 4 choices!
               </p>
               <div className="flex gap-2 flex-wrap">
@@ -136,7 +141,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
                 <h4 className="text-2xl font-bold text-gray-800">Infinity Round</h4>
               </div>
               <p className="text-gray-600 mb-3">
-                Keep going as long as you want! Answer unlimited multiplication questions. 
+                Keep going as long as you want! Answer unlimited addition questions. 
                 Press "End Round" when you're ready to see your stats!
               </p>
               <div className="flex gap-2 flex-wrap">
@@ -151,7 +156,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
 
       {/* Footer */}
       <div className="relative z-10 text-center pb-8">
-        <p className="text-gray-500 text-sm">Made with ❤️ for 3rd Grade Math Class</p>
+        <p className="text-gray-500 text-sm">Made with ❤️ for 2nd Grade Math Class</p>
         <div className="flex justify-center gap-2 mt-2 text-2xl">
           <span>📚</span><span>✏️</span><span>🧮</span><span>🎓</span><span>⭐</span>
         </div>

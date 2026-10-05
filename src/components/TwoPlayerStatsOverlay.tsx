@@ -23,7 +23,6 @@ const TwoPlayerStatsOverlay: React.FC<TwoPlayerStatsOverlayProps> = ({
   const p2Advice = getAdvice(player2Stats);
 
   useEffect(() => {
-    // Fire confetti for the winner
     const duration = 3000;
     const end = Date.now() + duration;
 
