@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 interface NumberPadProps {
   value: string;
@@ -61,6 +61,7 @@ const NumberPad: React.FC<NumberPadProps> = ({
   const colors = colorClasses[color];
   const topDigits = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
+  // Keyboard support
   useEffect(() => {
     if (!enableKeyboard || disabled) return;
 
@@ -80,11 +81,25 @@ const NumberPad: React.FC<NumberPadProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [enableKeyboard, disabled, onDigit, onSubmit, onDelete, onClear]);
 
+  // Use touch events for immediate response on iPad/tablets
+  // preventDefault stops iOS from delaying or blocking multi-touch
+  const handleTouchStart = useCallback((e: React.TouchEvent, action: () => void) => {
+    if (disabled) return;
+    e.preventDefault();
+    action();
+  }, [disabled]);
+
+  const handleClick = useCallback((e: React.MouseEvent, action: () => void) => {
+    if (disabled) return;
+    action();
+  }, [disabled]);
+
   return (
     <div
       ref={keyboardRef}
       className={`p-4 rounded-2xl ${colors.light} border-4 ${colors.border} shadow-lg`}
       tabIndex={enableKeyboard ? 0 : undefined}
+      style={{ touchAction: 'manipulation' }}
     >
       {/* Display */}
       <div className={`mb-4 p-4 bg-white rounded-xl text-center text-3xl font-bold ${colors.text} min-h-[60px] flex items-center justify-center border-2 ${colors.border}`}>
@@ -96,9 +111,17 @@ const NumberPad: React.FC<NumberPadProps> = ({
         {topDigits.map((digit) => (
           <button
             key={digit}
-            onClick={() => onDigit(digit)}
+            onTouchStart={(e) => handleTouchStart(e, () => onDigit(digit))}
+            onClick={(e) => handleClick(e, () => onDigit(digit))}
             disabled={disabled}
-            className={`${colors.bg} ${colors.hover} text-white font-bold text-xl py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
+            className={`${colors.bg} ${colors.hover} text-white font-bold text-xl py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md touch-btn`}
+            style={{ 
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              WebkitTouchCallout: 'none',
+              WebkitUserSelect: 'none',
+              userSelect: 'none',
+            }}
           >
             {digit}
           </button>
@@ -108,23 +131,47 @@ const NumberPad: React.FC<NumberPadProps> = ({
       {/* Bottom row - Centered zero */}
       <div className="grid grid-cols-3 gap-2 mb-3">
         <button
-          onClick={onClear}
+          onTouchStart={(e) => handleTouchStart(e, onClear)}
+          onClick={(e) => handleClick(e, onClear)}
           disabled={disabled}
-          className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 shadow-md"
+          className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 shadow-md touch-btn"
+          style={{ 
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            WebkitTouchCallout: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+          }}
         >
           Clear
         </button>
         <button
-          onClick={() => onDigit('0')}
+          onTouchStart={(e) => handleTouchStart(e, () => onDigit('0'))}
+          onClick={(e) => handleClick(e, () => onDigit('0'))}
           disabled={disabled}
-          className={`${colors.bg} ${colors.hover} text-white font-bold text-xl py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md`}
+          className={`${colors.bg} ${colors.hover} text-white font-bold text-xl py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md touch-btn`}
+          style={{ 
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            WebkitTouchCallout: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+          }}
         >
           0
         </button>
         <button
-          onClick={onDelete}
+          onTouchStart={(e) => handleTouchStart(e, onDelete)}
+          onClick={(e) => handleClick(e, onDelete)}
           disabled={disabled}
-          className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 shadow-md"
+          className="bg-yellow-400 hover:bg-yellow-500 text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 shadow-md touch-btn"
+          style={{ 
+            touchAction: 'manipulation',
+            WebkitTapHighlightColor: 'transparent',
+            WebkitTouchCallout: 'none',
+            WebkitUserSelect: 'none',
+            userSelect: 'none',
+          }}
         >
           ⌫
         </button>
@@ -132,9 +179,17 @@ const NumberPad: React.FC<NumberPadProps> = ({
       
       {/* Submit Button */}
       <button
-        onClick={onSubmit}
+        onTouchStart={(e) => handleTouchStart(e, onSubmit)}
+        onClick={(e) => handleClick(e, onSubmit)}
         disabled={disabled || value.length === 0}
-        className={`w-full ${colors.submit} text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-lg`}
+        className={`w-full ${colors.submit} text-white font-bold py-3 rounded-xl transition-all duration-150 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-md text-lg touch-btn`}
+        style={{ 
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
+          WebkitTouchCallout: 'none',
+          WebkitUserSelect: 'none',
+          userSelect: 'none',
+        }}
       >
         ✓ Submit
       </button>
