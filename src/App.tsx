@@ -4,6 +4,7 @@ import TwoPlayerGame from './components/TwoPlayerGame';
 import OnePlayerGame from './components/OnePlayerGame';
 import LightningRound from './components/LightningRound';
 import InfinityRound from './components/InfinityRound';
+import TugOfWar from './components/TugOfWar';
 import { GameMode } from './utils/gameUtils';
 
 function App() {
@@ -23,6 +24,8 @@ function App() {
         return <LightningRound onHome={goToHome} />;
       case 'infinity':
         return <InfinityRound onHome={goToHome} />;
+      case 'tug-of-war':
+        return <TugOfWar onHome={goToHome} />;
       default:
         return <LandingPage onSelectMode={setCurrentMode} />;
     }

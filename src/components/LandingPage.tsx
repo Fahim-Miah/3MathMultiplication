@@ -151,6 +151,29 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
               </div>
             </div>
           </button>
+
+          {/* Tug of War */}
+          <button
+            onClick={() => onSelectMode('tug-of-war')}
+            className="group bg-gradient-to-br from-orange-400 to-red-500 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left md:col-span-2"
+          >
+            <div className="bg-white/90 rounded-2xl p-5 h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-4xl">🪢</span>
+                <h4 className="text-2xl font-bold text-gray-800">Tug of War</h4>
+              </div>
+              <p className="text-gray-600 mb-3">
+                Two teams compete in an epic tug of war! Answer addition questions correctly to pull the rope to your side. 
+                First team to pull past the baseline wins!
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">🔵 Team 1</span>
+                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">🔴 Team 2</span>
+                <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">⏱️ Timed</span>
+                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">🪢 Pull!</span>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
 

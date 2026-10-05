@@ -137,4 +137,4 @@ export function getAdvice(stats: PlayerStats): string[] {
   return advice;
 }
 
-export type GameMode = 'landing' | 'two-player' | 'one-player' | 'lightning' | 'infinity';
+export type GameMode = 'landing' | 'two-player' | 'one-player' | 'lightning' | 'infinity' | 'tug-of-war';
