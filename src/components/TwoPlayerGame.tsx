@@ -301,9 +301,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       <div className="max-w-6xl mx-auto px-4 mt-6 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Player 1 - Blue */}
-          <div className={`bg-blue-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
-            player1CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-blue-300'
-          }`}>
+          <div 
+            className={`bg-blue-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
+              player1CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-blue-300'
+            }`}
+            style={{ touchAction: 'manipulation' }}
+          >
             <h3 className="text-center text-xl font-bold text-blue-700 mb-3">🔵 Player 1</h3>
             <NumberPad
               value={player1Input}
@@ -317,9 +320,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           </div>
 
           {/* Player 2 - Red */}
-          <div className={`bg-red-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
-            player2CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-red-300'
-          }`}>
+          <div 
+            className={`bg-red-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
+              player2CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-red-300'
+            }`}
+            style={{ touchAction: 'manipulation' }}
+          >
             <h3 className="text-center text-xl font-bold text-red-700 mb-3">🔴 Player 2</h3>
             <NumberPad
               value={player2Input}

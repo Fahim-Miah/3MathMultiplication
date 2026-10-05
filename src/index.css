@@ -102,10 +102,45 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 /* Prevent text selection during gameplay */
 button {
   -webkit-user-select: none;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+}
+
+/* Touch button styles for iPad/multi-touch support */
+.touch-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.touch-btn:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Ensure multi-touch works on iPad */
+* {
+  -webkit-touch-callout: none;
+}
+
+/* Prevent zoom on double-tap for iOS */
+html {
+  touch-action: manipulation;
 }
