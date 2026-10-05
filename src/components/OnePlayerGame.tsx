@@ -101,7 +101,6 @@ const OnePlayerGame: React.FC<OnePlayerGameProps> = ({ onHome }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-teal-50 to-emerald-100">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
@@ -115,7 +114,6 @@ const OnePlayerGame: React.FC<OnePlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Progress */}
       <div className="max-w-4xl mx-auto px-4 mt-4">
         <div className="bg-white rounded-2xl p-4 shadow-lg">
           <div className="flex items-center justify-between mb-2">
@@ -136,7 +134,6 @@ const OnePlayerGame: React.FC<OnePlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Question Display */}
       <div className="max-w-4xl mx-auto px-4 mt-6">
         <div className={`bg-white rounded-3xl p-8 shadow-xl text-center transition-all duration-300 ${
           feedback === 'correct' ? 'ring-4 ring-green-400 scale-105' :
@@ -155,7 +152,6 @@ const OnePlayerGame: React.FC<OnePlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Number Pad */}
       <div className="max-w-sm mx-auto px-4 mt-6 pb-8">
         <NumberPad
           value={input}
@@ -172,7 +168,6 @@ const OnePlayerGame: React.FC<OnePlayerGameProps> = ({ onHome }) => {
         />
       </div>
 
-      {/* Stats Overlay */}
       {showStats && (
         <StatsOverlay
           stats={stats}

@@ -8,7 +8,6 @@ interface LandingPageProps {
 const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-100 to-pink-200 overflow-hidden">
-      {/* Floating decorations */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-10 left-10 text-6xl animate-bounce" style={{ animationDelay: '0s' }}>✨</div>
         <div className="absolute top-20 right-20 text-5xl animate-bounce" style={{ animationDelay: '0.5s' }}>🌟</div>
@@ -18,7 +17,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
         <div className="absolute top-1/3 right-10 text-4xl animate-pulse" style={{ animationDelay: '0.7s' }}>✖️</div>
       </div>
 
-      {/* Header */}
       <div className="relative z-10 pt-8 pb-4 text-center">
         <div className="text-7xl mb-4 animate-bounce">🧮</div>
         <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent drop-shadow-lg">
@@ -33,7 +31,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
         </p>
       </div>
 
-      {/* Instructions */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 mt-6">
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-6 shadow-xl border-4 border-yellow-300">
           <h3 className="text-2xl font-bold text-center text-yellow-700 mb-4">📖 How to Play</h3>
@@ -54,12 +51,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
         </div>
       </div>
 
-      {/* Game Mode Selection */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 mt-8 pb-12">
         <h3 className="text-2xl font-bold text-center text-gray-700 mb-6">🎮 Choose Your Game!</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Two Player */}
           <button
             onClick={() => onSelectMode('two-player')}
             className="group bg-gradient-to-br from-blue-400 to-red-400 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left"
@@ -81,7 +76,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
             </div>
           </button>
 
-          {/* One Player */}
           <button
             onClick={() => onSelectMode('one-player')}
             className="group bg-gradient-to-br from-green-400 to-teal-400 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left"
@@ -103,7 +97,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
             </div>
           </button>
 
-          {/* Lightning Round */}
           <button
             onClick={() => onSelectMode('lightning')}
             className="group bg-gradient-to-br from-orange-400 to-amber-400 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left"
@@ -125,7 +118,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
             </div>
           </button>
 
-          {/* Infinity Round */}
           <button
             onClick={() => onSelectMode('infinity')}
             className="group bg-gradient-to-br from-purple-400 to-pink-400 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left"
@@ -146,10 +138,31 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectMode }) => {
               </div>
             </div>
           </button>
+
+          <button
+            onClick={() => onSelectMode('tug-of-war')}
+            className="group bg-gradient-to-br from-orange-400 to-red-500 rounded-3xl p-6 shadow-xl transform transition-all duration-300 hover:scale-105 hover:shadow-2xl text-left md:col-span-2"
+          >
+            <div className="bg-white/90 rounded-2xl p-5 h-full">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-4xl">🪢</span>
+                <h4 className="text-2xl font-bold text-gray-800">Tug of War</h4>
+              </div>
+              <p className="text-gray-600 mb-3">
+                Two teams compete in an epic tug of war! Answer multiplication questions correctly to pull the rope to your side. 
+                First team to pull past the baseline wins!
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">🔵 Team 1</span>
+                <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">🔴 Team 2</span>
+                <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-medium">⏱️ Timed</span>
+                <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium">🪢 Pull!</span>
+              </div>
+            </div>
+          </button>
         </div>
       </div>
 
-      {/* Footer */}
       <div className="relative z-10 text-center pb-8">
         <p className="text-gray-500 text-sm">Made with ❤️ for 3rd Grade Math Class</p>
         <div className="flex justify-center gap-2 mt-2 text-2xl">

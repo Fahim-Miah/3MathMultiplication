@@ -6,7 +6,7 @@ interface LightningRoundProps {
   onHome: () => void;
 }
 
-const GAME_DURATION = 60; // 60 seconds
+const GAME_DURATION = 60;
 
 const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
   const [question, setQuestion] = useState<Question>(generateQuestion());
@@ -50,24 +50,19 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     };
   }, [gameStarted, gameOver]);
 
-  // Keyboard support
   useEffect(() => {
     if (!gameStarted || gameOver || feedback !== null) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Press 1-4 to select choices
       if (e.key >= '1' && e.key <= '4') {
         const index = parseInt(e.key) - 1;
         if (index < choices.length) {
           handleAnswer(choices[index]);
         }
-      }
-      // Type numbers to find matching answer
-      else if (e.key >= '0' && e.key <= '9') {
+      } else if (e.key >= '0' && e.key <= '9') {
         setTypedInput(prev => {
           const newInput = (prev + e.key).slice(0, 3);
           const numValue = parseInt(newInput);
-          // Auto-select if matches a choice
           const matchIndex = choices.findIndex(c => c === numValue);
           if (matchIndex !== -1) {
             setTimeout(() => handleAnswer(choices[matchIndex]), 200);
@@ -196,7 +191,6 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-orange-50 to-amber-100">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button
@@ -212,7 +206,6 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Timer Bar */}
       <div className="max-w-4xl mx-auto px-4 mt-4">
         <div className="bg-white rounded-2xl p-3 shadow-lg">
           <div className="flex items-center justify-between mb-1">
@@ -228,7 +221,6 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Question */}
       <div className="max-w-4xl mx-auto px-4 mt-8">
         <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
           <p className="text-gray-500 text-lg mb-3">Quick! What is...</p>
@@ -236,14 +228,12 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
             {question.num1} × {question.num2}
           </div>
 
-          {/* Typed Input Display */}
           {typedInput && (
             <div className="mb-4 text-2xl font-bold text-orange-600 bg-orange-50 rounded-xl p-2 inline-block">
               Your answer: {typedInput}
             </div>
           )}
 
-          {/* Multiple Choice Grid */}
           <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
             {choices.map((choice, index) => {
               let btnClass = 'bg-gradient-to-br from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 border-orange-300 text-gray-800';
@@ -276,7 +266,6 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Game Over Overlay */}
       {gameOver && !showStats && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-fadeIn">
           <div className="bg-white rounded-3xl p-8 text-center transform animate-bounceIn shadow-2xl">
@@ -287,7 +276,6 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
         </div>
       )}
 
-      {/* Stats Overlay */}
       {showStats && (
         <StatsOverlay
           stats={stats}

@@ -82,7 +82,6 @@ const NumberPad: React.FC<NumberPadProps> = ({
   }, [enableKeyboard, disabled, onDigit, onSubmit, onDelete, onClear]);
 
   // Use touch events for immediate response on iPad/tablets
-  // preventDefault stops iOS from delaying or blocking multi-touch
   const handleTouchStart = useCallback((e: React.TouchEvent, action: () => void) => {
     if (disabled) return;
     e.preventDefault();

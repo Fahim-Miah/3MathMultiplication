@@ -21,7 +21,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   const [startTime, setStartTime] = useState(Date.now());
   const [elapsedTime, setElapsedTime] = useState(0);
   
-  // Small indication when a player gets the answer right
   const [player1CorrectFlash, setPlayer1CorrectFlash] = useState(false);
   const [player2CorrectFlash, setPlayer2CorrectFlash] = useState(false);
 
@@ -70,14 +69,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       };
       
       if (answer === question.answer) {
-        // Correct! Flash indication and advance score
         const newScore = player1Score + 1;
         newStats.correct = player1Stats.correct + 1;
         setPlayer1Score(newScore);
         setPlayer1Stats(newStats);
         setPlayer1Input('');
         
-        // Small non-distracting indication
         setPlayer1CorrectFlash(true);
         setTimeout(() => setPlayer1CorrectFlash(false), 1500);
         
@@ -91,10 +88,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           return;
         }
         
-        // Move to next question after correct answer
         nextQuestion();
       } else {
-        // Wrong answer - question stays the same
         newStats.incorrect = player1Stats.incorrect + 1;
         setPlayer1Stats(newStats);
         setPlayer1Input('');
@@ -108,14 +103,12 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
       };
       
       if (answer === question.answer) {
-        // Correct! Flash indication and advance score
         const newScore = player2Score + 1;
         newStats.correct = player2Stats.correct + 1;
         setPlayer2Score(newScore);
         setPlayer2Stats(newStats);
         setPlayer2Input('');
         
-        // Small non-distracting indication
         setPlayer2CorrectFlash(true);
         setTimeout(() => setPlayer2CorrectFlash(false), 1500);
         
@@ -129,10 +122,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
           return;
         }
         
-        // Move to next question after correct answer
         nextQuestion();
       } else {
-        // Wrong answer - question stays the same
         newStats.incorrect = player2Stats.incorrect + 1;
         setPlayer2Stats(newStats);
         setPlayer2Input('');
@@ -151,6 +142,7 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   };
 
   const startGame = () => {
+    setQuestion(generateQuestion());
     setGameStarted(true);
     setStartTime(Date.now());
   };
@@ -177,7 +169,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Pre-game setup screen
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-red-100 flex items-center justify-center">
@@ -238,7 +229,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-red-100">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
@@ -252,7 +242,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Score Bar */}
       <div className="max-w-6xl mx-auto px-4 mt-4">
         <div className="flex items-center justify-center gap-4 bg-white rounded-2xl p-4 shadow-lg">
           <div className="flex-1 text-center relative">
@@ -273,7 +262,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Winner Announcement */}
       {gameOver && !showStats && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-fadeIn">
           <div className="bg-white rounded-3xl p-8 text-center transform animate-bounceIn shadow-2xl">
@@ -286,7 +274,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
         </div>
       )}
 
-      {/* Question Display */}
       <div className="max-w-6xl mx-auto px-4 mt-6">
         <div className="bg-white rounded-3xl p-8 shadow-xl text-center">
           <p className="text-gray-500 text-lg mb-2">Solve this:</p>
@@ -297,10 +284,8 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Player Areas */}
       <div className="max-w-6xl mx-auto px-4 mt-6 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Player 1 - Blue */}
           <div 
             className={`bg-blue-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
               player1CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-blue-300'
@@ -319,7 +304,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
             />
           </div>
 
-          {/* Player 2 - Red */}
           <div 
             className={`bg-red-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
               player2CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-red-300'
@@ -340,7 +324,6 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Stats Overlay */}
       {showStats && (
         <TwoPlayerStatsOverlay
           player1Stats={player1Stats}

@@ -7,7 +7,7 @@ export interface Question {
 export interface PlayerStats {
   correct: number;
   incorrect: number;
-  totalTime: number; // in seconds
+  totalTime: number;
   questionsAnswered: number[];
   answersGiven: number[];
   correctAnswers: number[];
@@ -70,12 +70,10 @@ export function getAdvice(stats: PlayerStats): string[] {
     advice.push("✏️ Draw groups of objects to visualize multiplication.");
   }
 
-  // Find specific tables that need practice
   const tableMistakes: Record<number, number> = {};
   for (let i = 0; i < stats.questionsAnswered.length; i++) {
     if (stats.answersGiven[i] !== stats.correctAnswers[i]) {
       const q = stats.questionsAnswered[i];
-      // We'll track which numbers appear in wrong answers
       const num1 = Math.floor(q / 10);
       const num2 = q % 10;
       tableMistakes[num1] = (tableMistakes[num1] || 0) + 1;
@@ -95,4 +93,4 @@ export function getAdvice(stats: PlayerStats): string[] {
   return advice;
 }
 
-export type GameMode = 'landing' | 'two-player' | 'one-player' | 'lightning' | 'infinity';
+export type GameMode = 'landing' | 'two-player' | 'one-player' | 'lightning' | 'infinity' | 'tug-of-war';
