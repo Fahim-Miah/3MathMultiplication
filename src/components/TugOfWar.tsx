@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import NumberPad from './NumberPad';
 import StatsOverlay from './StatsOverlay';
-import { generateQuestion, Question, PlayerStats, Difficulty } from '../utils/gameUtils';
+import { generateQuestion, Question, PlayerStats } from '../utils/gameUtils';
 
 interface TugOfWarProps {
   onHome: () => void;
@@ -10,11 +10,10 @@ interface TugOfWarProps {
 const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
   const [gameStarted, setGameStarted] = useState(false);
   const [timeLimit, setTimeLimit] = useState(60);
-  const [difficulty, setDifficulty] = useState<Difficulty>('mixed');
-  const [question, setQuestion] = useState<Question>(generateQuestion('mixed'));
+  const [question, setQuestion] = useState<Question>(generateQuestion());
   const [team1Input, setTeam1Input] = useState('');
   const [team2Input, setTeam2Input] = useState('');
-  const [ropePosition, setRopePosition] = useState(0); // -100 to 100, negative = team1 winning
+  const [ropePosition, setRopePosition] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [winner, setWinner] = useState<'team1' | 'team2' | null>(null);
   const [showStats, setShowStats] = useState(false);
@@ -49,11 +48,9 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
       setElapsedTime(elapsed);
       
-      // Check if time is up
       if (elapsed >= timeLimit) {
         if (timerRef.current) clearInterval(timerRef.current);
         setGameOver(true);
-        // Determine winner based on rope position
         setWinner(ropePosition < 0 ? 'team1' : ropePosition > 0 ? 'team2' : null);
         setTimeout(() => setShowStats(true), 2000);
       }
@@ -64,14 +61,14 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
   }, [gameStarted, gameOver, startTime, timeLimit, ropePosition]);
 
   const nextQuestion = useCallback(() => {
-    setQuestion(generateQuestion(difficulty));
-  }, [difficulty]);
+    setQuestion(generateQuestion());
+  }, []);
 
   const checkAnswer = useCallback((team: 1 | 2, input: string) => {
     if (input.length === 0 || gameOver) return;
     
     const answer = parseInt(input);
-    const encodedQ = question.num1 * 1000 + question.num2;
+    const encodedQ = question.num1 * 10 + question.num2;
     
     if (team === 1) {
       const newStats = {
@@ -86,10 +83,8 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
         setTeam1Stats(newStats);
         setTeam1Input('');
         
-        // Move rope towards team1's side (negative direction)
         setRopePosition(prev => {
           const newPos = prev - 10;
-          // Check if team1 wins
           if (newPos <= -100) {
             if (timerRef.current) clearInterval(timerRef.current);
             setGameOver(true);
@@ -120,10 +115,8 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
         setTeam2Stats(newStats);
         setTeam2Input('');
         
-        // Move rope towards team2's side (positive direction)
         setRopePosition(prev => {
           const newPos = prev + 10;
-          // Check if team2 wins
           if (newPos >= 100) {
             if (timerRef.current) clearInterval(timerRef.current);
             setGameOver(true);
@@ -146,23 +139,23 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
 
   const handleTeam1Digit = (digit: string) => {
     if (gameOver) return;
-    setTeam1Input(prev => prev.length < 4 ? prev + digit : prev);
+    setTeam1Input(prev => prev.length < 3 ? prev + digit : prev);
   };
 
   const handleTeam2Digit = (digit: string) => {
     if (gameOver) return;
-    setTeam2Input(prev => prev.length < 4 ? prev + digit : prev);
+    setTeam2Input(prev => prev.length < 3 ? prev + digit : prev);
   };
 
   const startGame = () => {
-    setQuestion(generateQuestion(difficulty));
+    setQuestion(generateQuestion());
     setGameStarted(true);
     setStartTime(Date.now());
     setRopePosition(0);
   };
 
   const resetGame = () => {
-    setQuestion(generateQuestion(difficulty));
+    setQuestion(generateQuestion());
     setTeam1Input('');
     setTeam2Input('');
     setRopePosition(0);
@@ -182,35 +175,13 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Pre-game setup screen
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-yellow-100 flex items-center justify-center">
         <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full mx-4 text-center">
           <div className="text-6xl mb-4">🪢</div>
           <h2 className="text-3xl font-bold text-orange-700 mb-6">Tug of War</h2>
-          
-          {/* Difficulty Selection */}
-          <div className="mb-6">
-            <label className="block text-gray-700 font-bold mb-3 text-lg">Choose difficulty:</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['2-digit', 'mixed', '3-digit'] as Difficulty[]).map(diff => (
-                <button
-                  key={diff}
-                  onClick={() => setDifficulty(diff)}
-                  className={`py-3 rounded-xl font-bold text-sm transition-all duration-200 transform hover:scale-105 ${
-                    difficulty === diff
-                      ? 'bg-orange-600 text-white shadow-lg scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {diff === '2-digit' ? '2-digit' : diff === '3-digit' ? '3-digit' : 'Mixed'}
-                </button>
-              ))}
-            </div>
-          </div>
 
-          {/* Time Limit Selection */}
           <div className="mb-6">
             <label className="block text-gray-700 font-bold mb-3 text-lg">Select time limit:</label>
             <div className="grid grid-cols-3 gap-2">
@@ -264,7 +235,6 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-yellow-100">
-      {/* Header */}
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
@@ -280,48 +250,37 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Tug of War Animation */}
       <div className="max-w-6xl mx-auto px-4 mt-6">
         <div className="bg-white rounded-3xl p-6 shadow-xl">
-          {/* Baselines */}
           <div className="relative mb-4">
             <div className="flex justify-between items-center mb-2">
               <div className="text-blue-600 font-bold text-sm">🔵 Team 1 Baseline</div>
               <div className="text-red-600 font-bold text-sm">🔴 Team 2 Baseline</div>
             </div>
             
-            {/* Rope Track */}
             <div className="relative h-20 bg-gradient-to-r from-blue-100 via-gray-100 to-red-100 rounded-full border-4 border-gray-300 overflow-hidden">
-              {/* Baseline markers */}
               <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
               <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-500"></div>
-              
-              {/* Center line */}
               <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-400 -translate-x-1/2"></div>
               
-              {/* Characters and Rope */}
               <div 
                 className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 ease-out flex items-center"
                 style={{ left: `${50 + (ropePosition / 2)}%`, transform: `translate(-50%, -50%)` }}
               >
-                {/* Team 1 Character */}
                 <div className={`text-4xl transition-all duration-300 ${team1CorrectFlash ? 'scale-125' : ''}`}>
                   🧑
                 </div>
                 
-                {/* Rope */}
                 <div className="w-16 h-2 bg-yellow-600 rounded-full mx-2 relative">
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
                 
-                {/* Team 2 Character */}
                 <div className={`text-4xl transition-all duration-300 ${team2CorrectFlash ? 'scale-125' : ''}`}>
                   🧑
                 </div>
               </div>
             </div>
 
-            {/* Position indicator */}
             <div className="mt-2 text-center">
               <div className="inline-block bg-gray-100 rounded-full px-4 py-1">
                 <span className="font-bold text-gray-700">
@@ -331,33 +290,29 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
             </div>
           </div>
 
-          {/* Question */}
           <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-2xl p-6 text-center border-2 border-orange-300">
             <p className="text-gray-600 text-lg mb-2">Solve this to pull the rope!</p>
             <div className="text-5xl md:text-6xl font-bold text-gray-800">
-              {question.num1} + {question.num2} = ?
+              {question.num1} × {question.num2} = ?
             </div>
           </div>
         </div>
       </div>
 
-      {/* Winner Announcement */}
       {gameOver && !showStats && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 animate-fadeIn">
           <div className="bg-white rounded-3xl p-8 text-center transform animate-bounceIn shadow-2xl">
             <div className="text-7xl mb-4">🎉</div>
             <h2 className={`text-4xl font-bold ${winner === 'team1' ? 'text-blue-600' : winner === 'team2' ? 'text-red-600' : 'text-gray-600'}`}>
-              {winner === 'team1' ? '🔵 Team 1' : winner === 'team2' ? '🔴 Team 2' : "It's a Tie!"} Wins!
+              {winner === 'team1' ? '🔵 Team 1' : winner === 'team2' ? '🔴 Team 2' : "It's a Tie!"} {winner ? 'Wins!' : ''}
             </h2>
             <p className="text-gray-500 mt-2 text-lg">Loading stats...</p>
           </div>
         </div>
       )}
 
-      {/* Team Areas */}
       <div className="max-w-6xl mx-auto px-4 mt-6 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Team 1 - Blue */}
           <div className={`bg-blue-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
             team1CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-blue-300'
           }`}>
@@ -376,7 +331,6 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
             />
           </div>
 
-          {/* Team 2 - Red */}
           <div className={`bg-red-50 rounded-3xl p-4 border-4 shadow-lg transition-all duration-300 ${
             team2CorrectFlash ? 'border-green-400 ring-2 ring-green-300' : 'border-red-300'
           }`}>
@@ -397,7 +351,6 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
         </div>
       </div>
 
-      {/* Stats Overlay - Show winner's stats */}
       {showStats && winner && (
         <StatsOverlay
           stats={winner === 'team1' ? team1Stats : team2Stats}

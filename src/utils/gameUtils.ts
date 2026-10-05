@@ -2,7 +2,6 @@ export interface Question {
   num1: number;
   num2: number;
   answer: number;
-  type: '2-digit' | '3-digit';
 }
 
 export interface PlayerStats {
@@ -21,41 +20,16 @@ export interface GameResult {
   winner?: 'player1' | 'player2' | 'single' | null;
 }
 
-export type Difficulty = '2-digit' | '3-digit' | 'mixed';
-
-export function generateQuestion(difficulty: Difficulty = 'mixed'): Question {
-  let num1: number;
-  let num2: number;
-  let type: '2-digit' | '3-digit';
-
-  if (difficulty === '2-digit') {
-    num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-    num2 = Math.floor(Math.random() * 90) + 10; // 10-99
-    type = '2-digit';
-  } else if (difficulty === '3-digit') {
-    num1 = Math.floor(Math.random() * 900) + 100; // 100-999
-    num2 = Math.floor(Math.random() * 900) + 100; // 100-999
-    type = '3-digit';
-  } else {
-    // Mixed: 50% chance of each
-    if (Math.random() < 0.5) {
-      num1 = Math.floor(Math.random() * 90) + 10;
-      num2 = Math.floor(Math.random() * 90) + 10;
-      type = '2-digit';
-    } else {
-      num1 = Math.floor(Math.random() * 900) + 100;
-      num2 = Math.floor(Math.random() * 900) + 100;
-      type = '3-digit';
-    }
-  }
-
-  return { num1, num2, answer: num1 + num2, type };
+export function generateQuestion(): Question {
+  const num1 = Math.floor(Math.random() * 9) + 1;
+  const num2 = Math.floor(Math.random() * 9) + 1;
+  return { num1, num2, answer: num1 * num2 };
 }
 
 export function generateMultipleChoice(correctAnswer: number): number[] {
   const choices = new Set<number>([correctAnswer]);
   while (choices.size < 4) {
-    const offset = Math.floor(Math.random() * 40) - 20;
+    const offset = Math.floor(Math.random() * 20) - 10;
     const wrong = correctAnswer + offset;
     if (wrong > 0 && wrong !== correctAnswer) {
       choices.add(wrong);
@@ -80,58 +54,40 @@ export function getAdvice(stats: PlayerStats): string[] {
   const percentage = calculatePercentage(stats.correct, stats.questionsAnswered.length);
 
   if (percentage >= 90) {
-    advice.push("🌟 Amazing work! You're an addition master!");
-    advice.push("🚀 Try 3-digit numbers or challenge a friend!");
+    advice.push("🌟 Amazing work! You're a multiplication master!");
+    advice.push("🚀 Try harder numbers or challenge a friend!");
   } else if (percentage >= 70) {
     advice.push("👏 Great job! You're getting really good!");
-    advice.push("📝 Practice carrying over when digits add up to 10 or more.");
+    advice.push("📝 Practice the 7s and 8s times tables a bit more.");
   } else if (percentage >= 50) {
     advice.push("💪 Good effort! Keep practicing!");
-    advice.push("🎯 Line up your numbers carefully (ones under ones, tens under tens).");
-    advice.push("💡 Remember to carry the 1 when a column adds up to 10 or more!");
+    advice.push("🎯 Focus on the times tables you got wrong.");
+    advice.push("💡 Try counting by that number to help remember!");
   } else {
     advice.push("🌱 Don't give up! Practice makes perfect!");
-    advice.push("📚 Start with 2-digit numbers before trying 3-digit.");
-    advice.push("✏️ Write the numbers down and add column by column.");
-    advice.push("🔢 Check your work by adding the columns again!");
+    advice.push("📚 Try practicing smaller numbers first (1s, 2s, 5s, 10s).");
+    advice.push("🎵 Sing multiplication songs to help remember!");
+    advice.push("✏️ Draw groups of objects to visualize multiplication.");
   }
 
-  // Check if they struggle more with 3-digit
-  const twoDigitCorrect = [];
-  const threeDigitCorrect = [];
-  
+  const tableMistakes: Record<number, number> = {};
   for (let i = 0; i < stats.questionsAnswered.length; i++) {
-    const q = stats.questionsAnswered[i];
-    const num1 = Math.floor(q / 1000);
-    const num2 = q % 1000;
-    const isThreeDigit = num1 >= 100 || num2 >= 100;
-    
-    if (stats.answersGiven[i] === stats.correctAnswers[i]) {
-      if (isThreeDigit) {
-        threeDigitCorrect.push(true);
-      } else {
-        twoDigitCorrect.push(true);
-      }
-    } else {
-      if (isThreeDigit) {
-        threeDigitCorrect.push(false);
-      } else {
-        twoDigitCorrect.push(false);
-      }
+    if (stats.answersGiven[i] !== stats.correctAnswers[i]) {
+      const q = stats.questionsAnswered[i];
+      const num1 = Math.floor(q / 10);
+      const num2 = q % 10;
+      tableMistakes[num1] = (tableMistakes[num1] || 0) + 1;
+      tableMistakes[num2] = (tableMistakes[num2] || 0) + 1;
     }
   }
 
-  const twoDigitPct = twoDigitCorrect.length > 0 
-    ? calculatePercentage(twoDigitCorrect.filter(x => x).length, twoDigitCorrect.length)
-    : 100;
-  const threeDigitPct = threeDigitCorrect.length > 0
-    ? calculatePercentage(threeDigitCorrect.filter(x => x).length, threeDigitCorrect.length)
-    : 100;
+  const sortedMistakes = Object.entries(tableMistakes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 2);
 
-  if (threeDigitPct < twoDigitPct - 20 && threeDigitCorrect.length >= 2) {
-    advice.push("🔢 You're better at 2-digit addition! Practice 3-digit more!");
-  } else if (twoDigitPct < threeDigitPct - 20 && twoDigitCorrect.length >= 2) {
-    advice.push("🔢 You're better at 3-digit addition! Review 2-digit basics!");
+  if (sortedMistakes.length > 0) {
+    const tables = sortedMistakes.map(([num]) => `${num}'s`).join(' and ');
+    advice.push(`🔢 Focus extra practice on the ${tables} times tables!`);
   }
 
   return advice;
