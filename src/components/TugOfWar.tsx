@@ -185,22 +185,22 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
           <div className="mb-6">
             <label className="block text-gray-700 font-bold mb-3 text-lg">Select time limit:</label>
             <div className="grid grid-cols-3 gap-2">
-              {[30, 60, 90, 120, 180, 300].map(seconds => (
+              {[1, 3, 5, 7, 10, 15].map(minutes => (
                 <button
-                  key={seconds}
-                  onClick={() => setTimeLimit(seconds)}
+                  key={minutes}
+                  onClick={() => setTimeLimit(minutes * 60)}
                   className={`py-3 rounded-xl font-bold text-sm transition-all duration-200 transform hover:scale-105 ${
-                    timeLimit === seconds
+                    timeLimit === minutes * 60
                       ? 'bg-orange-600 text-white shadow-lg scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {seconds < 60 ? `${seconds}s` : `${seconds / 60}m`}
+                  {minutes} min
                 </button>
               ))}
             </div>
             <p className="text-gray-500 text-sm mt-3">
-              Game lasts <span className="font-bold text-orange-600">{timeLimit < 60 ? `${timeLimit} seconds` : `${timeLimit / 60} minute${timeLimit > 60 ? 's' : ''}`}</span>
+              Game lasts <span className="font-bold text-orange-600">{timeLimit / 60} minute{timeLimit / 60 > 1 ? 's' : ''}</span>
             </p>
           </div>
 
@@ -251,48 +251,98 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 mt-6">
-        <div className="bg-white rounded-3xl p-6 shadow-xl">
-          <div className="relative mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <div className="text-blue-600 font-bold text-sm">🔵 Team 1 Baseline</div>
-              <div className="text-red-600 font-bold text-sm">🔴 Team 2 Baseline</div>
+        <div className="bg-white rounded-3xl p-8 shadow-2xl">
+          <div className="relative mb-6">
+            <div className="flex justify-between items-center mb-3">
+              <div className="text-blue-600 font-bold text-lg">🔵 Team 1 Baseline</div>
+              <div className="text-red-600 font-bold text-lg">🔴 Team 2 Baseline</div>
             </div>
             
-            <div className="relative h-20 bg-gradient-to-r from-blue-100 via-gray-100 to-red-100 rounded-full border-4 border-gray-300 overflow-hidden">
-              <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-500"></div>
-              <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-400 -translate-x-1/2"></div>
+            {/* Big Tug of War Arena */}
+            <div className="relative h-48 bg-gradient-to-b from-sky-200 via-sky-100 to-green-200 rounded-3xl border-8 border-yellow-400 overflow-hidden shadow-inner">
+              {/* Grass at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-green-400 to-green-300"></div>
               
+              {/* Baseline markers */}
+              <div className="absolute left-4 top-0 bottom-0 w-2 bg-blue-500 rounded-full shadow-lg"></div>
+              <div className="absolute right-4 top-0 bottom-0 w-2 bg-red-500 rounded-full shadow-lg"></div>
+              
+              {/* Center line */}
+              <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-yellow-500 -translate-x-1/2 opacity-50"></div>
+              
+              {/* Sun */}
+              <div className="absolute top-4 right-8 text-5xl animate-pulse">☀️</div>
+              
+              {/* Clouds */}
+              <div className="absolute top-6 left-12 text-3xl opacity-70">☁️</div>
+              <div className="absolute top-10 left-1/3 text-2xl opacity-60">☁️</div>
+              
+              {/* Characters and Rope - Much Bigger! */}
               <div 
-                className="absolute top-1/2 -translate-y-1/2 transition-all duration-500 ease-out flex items-center"
-                style={{ left: `${50 + (ropePosition / 2)}%`, transform: `translate(-50%, -50%)` }}
+                className="absolute top-1/2 -translate-y-1/2 transition-all duration-700 ease-out flex items-center gap-4"
+                style={{ left: `${50 + (ropePosition / 2.5)}%`, transform: `translate(-50%, -50%)` }}
               >
-                <div className={`text-4xl transition-all duration-300 ${team1CorrectFlash ? 'scale-125' : ''}`}>
-                  🧑
+                {/* Team 1 Character - Big and Animated */}
+                <div className={`text-8xl transition-all duration-300 ${
+                  team1CorrectFlash ? 'scale-150 rotate-12 animate-bounce' : 'animate-pulse'
+                }`}>
+                  🦸
                 </div>
                 
-                <div className="w-16 h-2 bg-yellow-600 rounded-full mx-2 relative">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-red-500 rounded-full border-2 border-white"></div>
+                {/* Rope - Thicker and More Visible */}
+                <div className="relative">
+                  <div className="w-32 h-4 bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 rounded-full shadow-lg border-2 border-yellow-800"></div>
+                  {/* Rope texture */}
+                  <div className="absolute top-0 left-0 right-0 h-full flex items-center justify-around">
+                    <div className="w-1 h-3 bg-yellow-900 rounded"></div>
+                    <div className="w-1 h-3 bg-yellow-900 rounded"></div>
+                    <div className="w-1 h-3 bg-yellow-900 rounded"></div>
+                    <div className="w-1 h-3 bg-yellow-900 rounded"></div>
+                  </div>
+                  {/* Center marker */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-red-500 rounded-full border-4 border-white shadow-xl animate-pulse"></div>
                 </div>
                 
-                <div className={`text-4xl transition-all duration-300 ${team2CorrectFlash ? 'scale-125' : ''}`}>
-                  🧑
+                {/* Team 2 Character - Big and Animated */}
+                <div className={`text-8xl transition-all duration-300 ${
+                  team2CorrectFlash ? 'scale-150 -rotate-12 animate-bounce' : 'animate-pulse'
+                }`}>
+                  🦸‍♀️
                 </div>
               </div>
+              
+              {/* Effort particles when answering correctly */}
+              {team1CorrectFlash && (
+                <div className="absolute left-1/4 top-1/3 text-4xl animate-ping">💪</div>
+              )}
+              {team2CorrectFlash && (
+                <div className="absolute right-1/4 top-1/3 text-4xl animate-ping">💪</div>
+              )}
             </div>
 
-            <div className="mt-2 text-center">
-              <div className="inline-block bg-gray-100 rounded-full px-4 py-1">
-                <span className="font-bold text-gray-700">
-                  {ropePosition === 0 ? '⚖️ Even!' : ropePosition < 0 ? `🔵 Team 1 leading by ${Math.abs(ropePosition)}%` : `🔴 Team 2 leading by ${ropePosition}%`}
-                </span>
+            {/* Position indicator - Bigger and More Colorful */}
+            <div className="mt-4 text-center">
+              <div className={`inline-block rounded-full px-6 py-3 shadow-lg text-xl font-bold ${
+                ropePosition === 0 
+                  ? 'bg-gray-200 text-gray-700' 
+                  : ropePosition < 0 
+                    ? 'bg-blue-500 text-white animate-pulse' 
+                    : 'bg-red-500 text-white animate-pulse'
+              }`}>
+                {ropePosition === 0 
+                  ? '⚖️ Perfectly Even!' 
+                  : ropePosition < 0 
+                    ? `🔵 Team 1 is winning! (${Math.abs(ropePosition)}%)` 
+                    : `🔴 Team 2 is winning! (${ropePosition}%)`
+                }
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-orange-100 to-yellow-100 rounded-2xl p-6 text-center border-2 border-orange-300">
-            <p className="text-gray-600 text-lg mb-2">Solve this to pull the rope!</p>
-            <div className="text-5xl md:text-6xl font-bold text-gray-800">
+          {/* Question Display - Bigger and More Exciting */}
+          <div className="bg-gradient-to-r from-orange-200 via-yellow-200 to-orange-200 rounded-3xl p-8 text-center border-4 border-orange-400 shadow-xl">
+            <p className="text-orange-700 text-2xl font-bold mb-3 animate-bounce">🎯 Solve this to pull the rope! 🎯</p>
+            <div className="text-6xl md:text-7xl font-bold text-gray-800 bg-white rounded-2xl py-6 shadow-inner">
               {question.num1} × {question.num2} = ?
             </div>
           </div>
