@@ -228,7 +228,7 @@ const TwoPlayerGame: React.FC<TwoPlayerGameProps> = ({ onHome }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-red-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-red-100" onContextMenu={(e) => e.preventDefault()}>
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button

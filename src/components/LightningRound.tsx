@@ -96,6 +96,8 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
     setTypedInput('');
   }, []);
 
+  const lastTouchTimeRef = useRef(0);
+
   const handleAnswer = useCallback((choice: number) => {
     if (gameOver || feedback !== null) return;
 
@@ -124,6 +126,20 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
       nextQuestion();
     }, 600);
   }, [question, stats, gameOver, feedback, nextQuestion]);
+
+  const handleChoiceTouch = useCallback((e: React.TouchEvent, choice: number) => {
+    e.preventDefault();
+    lastTouchTimeRef.current = Date.now();
+    handleAnswer(choice);
+  }, [handleAnswer]);
+
+  const handleChoiceClick = useCallback((e: React.MouseEvent, choice: number) => {
+    if (Date.now() - lastTouchTimeRef.current < 500) {
+      e.preventDefault();
+      return;
+    }
+    handleAnswer(choice);
+  }, [handleAnswer]);
 
   const startGame = () => {
     setGameStarted(true);
@@ -251,9 +267,11 @@ const LightningRound: React.FC<LightningRoundProps> = ({ onHome }) => {
               return (
                 <button
                   key={index}
-                  onClick={() => handleAnswer(choice)}
+                  onTouchStart={(e) => handleChoiceTouch(e, choice)}
+                  onClick={(e) => handleChoiceClick(e, choice)}
                   disabled={feedback !== null || gameOver}
-                  className={`${btnClass} font-bold text-3xl py-6 rounded-2xl border-4 transition-all duration-200 transform shadow-md relative`}
+                  className={`${btnClass} font-bold text-3xl py-6 rounded-2xl border-4 transition-all duration-200 transform shadow-md relative touch-btn`}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                 >
                   <span className="absolute top-2 left-3 text-xs text-gray-400 font-normal">{index + 1}</span>
                   {choice}
