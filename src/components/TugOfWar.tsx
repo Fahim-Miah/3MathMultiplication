@@ -234,7 +234,7 @@ const TugOfWar: React.FC<TugOfWarProps> = ({ onHome }) => {
   const timeLeft = Math.max(0, timeLimit - elapsedTime);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-yellow-100">
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-red-50 to-yellow-100" onContextMenu={(e) => e.preventDefault()}>
       <div className="bg-white/80 backdrop-blur-sm shadow-lg p-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
